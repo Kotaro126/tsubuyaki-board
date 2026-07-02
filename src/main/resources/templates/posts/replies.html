@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ja">
+<body>
+<th:block th:fragment="replyNodes(nodes)">
+    <li class="reply-tree__item" th:each="node : ${nodes}">
+        <article class="post post--reply">
+            <header>
+                <span class="post__avatar"
+                      th:style="'--avatar-color: ' + ${node.avatarColor}"
+                      aria-hidden="true"></span>
+                <span class="post__author" th:text="${node.author}">投稿者</span>
+                <span class="post__created-at"
+                      th:text="${#temporals.format(node.createdAt, 'yyyy-MM-dd HH:mm')}">2026-05-23 09:00</span>
+            </header>
+            <p class="post__body" th:text="${node.body}">本文</p>
+            <nav class="post__tags" th:if="${!#lists.isEmpty(node.tagNames)}">
+                <a th:each="tagName : ${node.tagNames}"
+                   th:href="@{/tags/{name}(name=${tagName})}"
+                   th:text="'#' + ${tagName}">#tag</a>
+            </nav>
+            <footer>
+                <span>いいね <span th:text="${node.likeCount}">0</span></span>
+                <form th:action="@{/posts/{id}/likes(id=${node.id})}" method="post">
+                    <button type="submit">Like</button>
+                </form>
+            </footer>
+            <form class="reply-form reply-form--inline"
+                  th:action="@{/posts/{id}/replies(id=${node.id})}"
+                  th:object="${replyForm}"
+                  method="post">
+                <label th:for="'reply-author-' + ${node.id}">名前</label>
+                <input type="text"
+                       th:id="'reply-author-' + ${node.id}"
+                       name="author"
+                       th:value="${replyTargetId == node.id ? replyForm.author : ''}"
+                       maxlength="30"
+                       required>
+                <p class="error"
+                   th:if="${replyTargetId == node.id and #fields.hasErrors('author')}"
+                   th:errors="*{author}">エラー</p>
+                <label th:for="'reply-body-' + ${node.id}">本文</label>
+                <textarea th:id="'reply-body-' + ${node.id}"
+                          name="body"
+                          th:text="${replyTargetId == node.id ? replyForm.body : ''}"
+                          maxlength="280"
+                          rows="2"
+                          required></textarea>
+                <p class="error"
+                   th:if="${replyTargetId == node.id and #fields.hasErrors('body')}"
+                   th:errors="*{body}">エラー</p>
+                <label th:for="'reply-avatarColor-' + ${node.id}">アバター色</label>
+                <input type="color"
+                       th:id="'reply-avatarColor-' + ${node.id}"
+                       name="avatarColor"
+                       th:value="${replyTargetId == node.id ? replyForm.avatarColor : '#6b7280'}">
+                <p class="error"
+                   th:if="${replyTargetId == node.id and #fields.hasErrors('avatarColor')}"
+                   th:errors="*{avatarColor}">エラー</p>
+                <button type="submit">返信</button>
+            </form>
+        </article>
+        <ul class="reply-tree reply-tree--nested"
+            th:if="${!#lists.isEmpty(node.children)}"
+            th:insert="~{posts/replies :: replyNodes(${node.children})}"></ul>
+    </li>
+</th:block>
+</body>
+</html>

@@ -35,7 +35,7 @@ class SamplePostServiceTest {
     @Test
     @DisplayName("Service_findLatest50_投稿がないとき_空リストを返す")
     void findLatest50_returnsEmpty_whenNoPosts() {
-        given(postRepository.findTop50ByOrderByCreatedAtDesc()).willReturn(Collections.emptyList());
+        given(postRepository.findTop50ByParentIsNullOrderByCreatedAtDesc()).willReturn(Collections.emptyList());
 
         assertThat(postService.findLatest50()).isEmpty();
     }

@@ -46,6 +46,7 @@ public class Tag {
         if (!(o instanceof Tag other)) {
             return false;
         }
+        // タグは同じ名前なら同一概念として扱うため、永続化前でも name で比較する。
         return Objects.equals(name, other.name);
     }
 

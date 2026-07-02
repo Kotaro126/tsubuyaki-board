@@ -14,6 +14,7 @@ public class PostForm {
     @Size(max = 280, message = "本文は 280 文字以内で入力してください")
     private String body;
 
+    // HTML color input とサーバー側検証を合わせ、未指定時は User 側の既定色に寄せる。
     @Pattern(regexp = "^$|^#[0-9A-Fa-f]{6}$", message = "アバター色は #RRGGBB 形式で選択してください")
     private String avatarColor = com.example.tsubuyaki.domain.User.DEFAULT_AVATAR_COLOR;
 

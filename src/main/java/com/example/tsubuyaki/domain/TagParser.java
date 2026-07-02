@@ -15,9 +15,11 @@ public final class TagParser {
             return List.of();
         }
 
+        // 入力順を保ちながら重複タグを除くため LinkedHashSet に一度集約する。
         Set<String> tags = new LinkedHashSet<>();
         int index = 0;
         while (index < body.length()) {
+            // 仕様上、全角の「＃」はタグ開始として扱わず半角 # だけを検出する。
             int hashIndex = body.indexOf('#', index);
             if (hashIndex < 0) {
                 break;
@@ -38,6 +40,7 @@ public final class TagParser {
     }
 
     private static boolean isTagSeparator(char character) {
+        // Java の空白判定に加え、全角スペースもタグ区切りとして明示的に扱う。
         return Character.isWhitespace(character) || character == '　';
     }
 }

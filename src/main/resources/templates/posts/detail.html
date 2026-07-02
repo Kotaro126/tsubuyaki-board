@@ -37,6 +37,52 @@
             </form>
         </footer>
     </article>
+
+    <section class="reply-form">
+        <h2>リプライする</h2>
+        <form th:action="@{/posts/{id}/replies(id=${post.id})}" th:object="${replyForm}" method="post">
+            <div>
+                <label for="reply-author">名前</label>
+                <input type="text"
+                       id="reply-author"
+                       name="author"
+                       th:value="${replyTargetId == post.id ? replyForm.author : ''}"
+                       maxlength="30"
+                       required>
+                <p class="error"
+                   th:if="${replyTargetId == post.id and #fields.hasErrors('author')}"
+                   th:errors="*{author}">エラー</p>
+            </div>
+            <div>
+                <label for="reply-body">本文</label>
+                <textarea id="reply-body"
+                          name="body"
+                          th:text="${replyTargetId == post.id ? replyForm.body : ''}"
+                          maxlength="280"
+                          rows="3"
+                          required></textarea>
+                <p class="error"
+                   th:if="${replyTargetId == post.id and #fields.hasErrors('body')}"
+                   th:errors="*{body}">エラー</p>
+            </div>
+            <div>
+                <label for="reply-avatarColor">アバター色</label>
+                <input type="color"
+                       id="reply-avatarColor"
+                       name="avatarColor"
+                       th:value="${replyTargetId == post.id ? replyForm.avatarColor : '#6b7280'}">
+                <p class="error"
+                   th:if="${replyTargetId == post.id and #fields.hasErrors('avatarColor')}"
+                   th:errors="*{avatarColor}">エラー</p>
+            </div>
+            <button type="submit">返信</button>
+        </form>
+    </section>
+
+    <section class="replies" th:if="${!#lists.isEmpty(replyTree)}">
+        <h2>リプライ</h2>
+        <ul class="reply-tree" th:insert="~{posts/replies :: replyNodes(${replyTree})}"></ul>
+    </section>
 </main>
 </body>
 </html>

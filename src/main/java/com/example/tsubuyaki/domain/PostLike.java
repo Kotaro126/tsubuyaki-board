@@ -17,6 +17,7 @@ import java.util.Objects;
 
 @Entity
 @Table(name = "post_likes",
+        // 同じ利用者識別子が同じ投稿へ重複していいねできないよう DB 制約でも守る。
         uniqueConstraints = @UniqueConstraint(name = "post_likes_post_client_uk", columnNames = { "post_id", "client_hash" }))
 public class PostLike {
 

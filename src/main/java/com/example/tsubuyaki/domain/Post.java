@@ -10,11 +10,14 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
 
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
@@ -37,6 +40,14 @@ public class Post {
     @Column(name = "created_at", nullable = false)
     private Instant createdAt;
 
+    // parent が null の投稿を通常投稿、値を持つ投稿をリプライとして扱う。
+    @ManyToOne
+    @JoinColumn(name = "parent_id")
+    private Post parent;
+
+    @OneToMany(mappedBy = "parent")
+    private List<Post> replies = new ArrayList<>();
+
     @ManyToMany
     @JoinTable(name = "post_tags",
             joinColumns = @JoinColumn(name = "post_id"),
@@ -56,6 +67,19 @@ public class Post {
     }
 
     public Post(User user, String body, Instant createdAt) {
+        this(null, user, body, createdAt);
+    }
+
+    public Post(Post parent, String author, String body, Instant createdAt) {
+        this(parent, new User(author, User.DEFAULT_AVATAR_COLOR), body, createdAt);
+    }
+
+    public Post(Post parent, String author, String body, Instant createdAt, String avatarColor) {
+        this(parent, new User(author, avatarColor), body, createdAt);
+    }
+
+    public Post(Post parent, User user, String body, Instant createdAt) {
+        this.parent = parent;
         this.user = user;
         this.body = body;
         this.createdAt = createdAt;
@@ -83,6 +107,22 @@ public class Post {
 
     public Set<Tag> getTags() {
         return Set.copyOf(tags);
+    }
+
+    public Post getParent() {
+        return parent;
+    }
+
+    public Long getParentId() {
+        return parent == null ? null : parent.getId();
+    }
+
+    public boolean isReply() {
+        return parent != null;
+    }
+
+    public List<Post> getReplies() {
+        return List.copyOf(replies);
     }
 
     public void addTag(Tag tag) {

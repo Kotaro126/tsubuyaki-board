@@ -50,6 +50,7 @@ public class User {
 
     public void updateAvatarColor(String avatarColor) {
         if (avatarColor == null || avatarColor.isBlank()) {
+            // 未選択投稿では既存ユーザーの色を維持し、空値で上書きしない。
             return;
         }
         this.avatarColor = avatarColor;
@@ -73,6 +74,7 @@ public class User {
 
     private String normalizeAvatarColor(String color) {
         if (color == null || color.isBlank()) {
+            // 初回投稿で色未選択の場合でも一覧表示が安定するよう既定色を補う。
             return DEFAULT_AVATAR_COLOR;
         }
         return color;
